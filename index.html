@@ -273,233 +273,6 @@
             margin-top: 20px;
             text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.5);
         }
-        
-        /* メインコンテナ */
-        .game-container {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        
-        /* ゲーム盤 */
-        canvas {
-            border: 3px solid #00ff00;
-            background-color: #000;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            display: block;
-        }
-        
-        .canvas-area {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-            position: relative; /* NEXTを絶対配置する親要素 */
-            width: auto;
-            max-width: 100%;
-        }
-        
-        .canvas-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 400px; /* PCで大きくなりすぎないように制限 */
-        }
-        
-        #tetrisCanvas {
-            width: 100%; /* 画面幅に合わせて縮小 */
-            height: auto;
-            max-width: 400px; /* 大きくなりすぎない制限 */
-        }
-        
-        /* 右側情報パネル */
-        .info-panel {
-            background-color: #16213e;
-            border: 3px solid #00ff00;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            min-width: 200px;
-        }
-        
-        .info-panel h3 {
-            color: #00ff00;
-            margin-top: 0;
-            border-bottom: 2px solid #00ff00;
-            padding-bottom: 10px;
-            text-align: center;
-        }
-        
-        .next-preview {
-            text-align: center;
-            margin-bottom: 10px;
-            min-width: 120px;
-        }
-        
-        .next-preview h3 {
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        
-        #nextCanvas {
-            border: 2px solid #00ff00;
-            background-color: #000;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        .stats {
-            background-color: #0f3460;
-            padding: 15px;
-            border-radius: 3px;
-            margin-bottom: 15px;
-        }
-        
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin: 8px 0;
-            font-size: 16px;
-        }
-        
-        .stat-label {
-            color: #00ff00;
-            font-weight: bold;
-        }
-        
-        .stat-value {
-            color: #00ff00;
-            font-weight: bold;
-        }
-        
-        /* コントロール */
-        .controls {
-            text-align: center;
-            margin-top: 30px;
-        }
-        
-        .controls h3 {
-            color: #00ff00;
-            margin-bottom: 15px;
-        }
-        
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        
-        button {
-            padding: 12px 20px;
-            font-size: 14px;
-            background-color: #0f3460;
-            color: #00ff00;
-            border: 2px solid #00ff00;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-        
-        button:hover {
-            background-color: #00ff00;
-            color: #000;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
-        }
-        
-        button:active {
-            transform: scale(0.98);
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 8px;
-                margin: 0;
-                height: 100dvh;
-                overflow-y: hidden;
-            }
-
-            h1 {
-                margin-bottom: 15px;
-                font-size: 18px;
-            }
-
-            .game-container {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-            }
-
-            .canvas-area {
-                display: block; /* NEXTをCanvasの上に重ねるためフローを解除 */
-                width: 100%;
-                max-width: 100vw;
-                position: relative;
-                margin: 0 auto;
-            }
-
-            .canvas-wrapper {
-                width: 100%;
-                max-width: 100vw;
-            }
-
-            #tetrisCanvas {
-                width: auto;
-                height: auto;
-                max-width: 95vw;
-                max-height: 58dvh;
-                display: block;
-                margin: 0 auto;
-            }
-
-            .next-preview {
-                position: absolute;
-                top: 6px;
-                right: -8px;
-                margin: 0;
-                transform: scale(0.6);
-                transform-origin: top right;
-                background: rgba(0, 0, 0, 0.7);
-                padding: 6px;
-                border-radius: 8px;
-                border: 2px solid #00ff00;
-                z-index: 10;
-            }
-
-            #nextCanvas {
-                width: 70px;
-                height: 70px;
-            }
-
-            .info-panel {
-                display: none; /* スマホでは非表示 */
-            }
-
-            .controls {
-                display: none; /* スマホではモバイルコントロールを使用 */
-            }
-
-            .mobile-controls {
-                display: block; /* スマホで表示 */
-            }
-
-            .button-group {
-                justify-content: center;
-            }
-        }
-
-        .game-over {
-            color: #ff0000;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 20px;
-            text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.5);
-        }
     </style>
 </head>
 <body>
@@ -901,6 +674,11 @@
             return false;
         }
 
+        // 位置の有効性をチェックする関数
+        function isValidPosition(x, y, shape) {
+            return !collision(x, y, shape);
+        }
+
         // テトリミノを盤面に固定
         function placePiece() {
             for (let row = 0; row < currentPiece.shape.length; row++) {
@@ -950,30 +728,56 @@
             }
         }
 
-        // テトリミノを回転
+        // テトリミノを回転（wall kick対応）
         function rotatePiece(direction = 1) {
             if (!currentPiece || gameOver) return; // ピースがないかゲームオーバーの場合は何もしない
             
             const nextRotation = (currentRotation + direction + 4) % 4; // 次の回転状態（direction=1:右回転, direction=-1:左回転）
             const nextShape = TETROMINOS[currentType][nextRotation];
             
-            // 回転後の位置をチェック（TGM1では壁蹴りなしで単純に回転）
-            if (!collision(currentX, currentY, nextShape)) {
+            // 横方向のみのwall kickシーケンス
+            const kickSequence = [
+                { dx: 1, dy: 0 }, // 右1マス
+                { dx: -1, dy: 0 }, // 左1マス
+                { dx: 2, dy: 0 }, // 右2マス
+                { dx: -2, dy: 0 } // 左2マス
+            ];
+            
+            // まず、その場で回転を試す
+            if (isValidPosition(currentX, currentY, nextShape)) {
                 currentPiece.shape = nextShape;
                 currentPiece.rotation = nextRotation;
                 currentRotation = nextRotation;
-                // 回転時は履歴保存しない（ピース単位で保存するため）
+                return;
             }
+            
+            // wall kickを試す
+            for (const kick of kickSequence) {
+                const newX = currentX + kick.dx;
+                const newY = currentY + kick.dy;
+                if (isValidPosition(newX, newY, nextShape)) {
+                    currentX = newX;
+                    currentY = newY;
+                    currentPiece.shape = nextShape;
+                    currentPiece.rotation = nextRotation;
+                    currentRotation = nextRotation;
+                    return;
+                }
+            }
+            
+            // 全てのキックが失敗したら回転をキャンセル
         }
 
         // テトリミノを移動
         function movePiece(dx, dy) {
             if (!currentPiece || gameOver) return; // ピースがないかゲームオーバーの場合は何もしない
             
-            if (!collision(currentX + dx, currentY + dy, currentPiece.shape)) {
-                currentX += dx;
-                currentY += dy;
-                // 移動時は履歴保存しない（ピース単位で保存するため）
+            const newX = currentX + dx;
+            const newY = currentY + dy;
+            
+            if (isValidPosition(newX, newY, currentPiece.shape)) {
+                currentX = newX;
+                currentY = newY;
             } else if (dy > 0) {
                 // 下に移動できなかったら固定
                 placePiece();
@@ -990,7 +794,7 @@
         // ハードドロップ
         function hardDrop() {
             if (!currentPiece || gameOver) return; // ピースがないかゲームオーバーの場合は何もしない
-            while (!collision(currentX, currentY + 1, currentPiece.shape)) {
+            while (isValidPosition(currentX, currentY + 1, currentPiece.shape)) {
                 currentY++;
             }
             placePiece();
