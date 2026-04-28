@@ -357,15 +357,35 @@
         const ROWS = 10;
         const BLOCK_SIZE = 40; // 1ブロックのサイズ（BIGモード風：各ブロックは2×2の4つセルで構成）
 
-        // 盤面を表す2次元配列（0: 空、1-7: テトリミノの色）
-        let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+        // TGM風 History Randomizer
+        const pieces = ['I','T','O','L','J','S','Z'];
+        let history = ['Z','S','Z','S'];
+
+        function getNextPiece() {
+            let roll;
+            let firstRoll;
+            for (let i = 0; i < 6; i++) {
+                roll = pieces[Math.floor(Math.random() * 7)];
+                if (i === 0) firstRoll = roll;
+                if (!history.includes(roll)) {
+                    break;
+                }
+            }
+            if (history.includes(roll)) {
+                roll = firstRoll;
+            }
+            history.pop();
+            history.unshift(roll);
+            return roll;
+        }
 
         // テトリミノの定義（TGM/ARS風固定回転状態）
+        // rotations[0] = 出現時状態
         const PIECES = {
             I: {
                 color: '#FF0000', // 赤
                 rotations: [
-                    // 0: 横向き
+                    // 0: 出現時（横4ブロック）
                     [
                         [0, 0, 0, 0],
                         [1, 1, 1, 1],
@@ -398,7 +418,7 @@
             O: {
                 color: '#FFFF00', // 黄色
                 rotations: [
-                    // 0: 正方形
+                    // 0: 出現時（2×2正方形）
                     [
                         [1, 1],
                         [1, 1]
@@ -423,11 +443,11 @@
             T: {
                 color: '#00FFFF', // シアン
                 rotations: [
-                    // 0: 横向き
+                    // 0: 出現時（下に1つ、上に3つ）
                     [
-                        [0, 1, 0],
+                        [0, 0, 0],
                         [1, 1, 1],
-                        [0, 0, 0]
+                        [0, 1, 0]
                     ],
                     // R: 右回転
                     [
@@ -437,9 +457,9 @@
                     ],
                     // 2: 180度回転
                     [
-                        [0, 0, 0],
+                        [0, 1, 0],
                         [1, 1, 1],
-                        [0, 1, 0]
+                        [0, 0, 0]
                     ],
                     // L: 左回転
                     [
@@ -452,7 +472,7 @@
             S: {
                 color: '#800080', // 紫
                 rotations: [
-                    // 0: 横向き
+                    // 0: 出現時（上段右2つ、下段左2つ）
                     [
                         [0, 1, 1],
                         [1, 1, 0],
@@ -481,7 +501,7 @@
             Z: {
                 color: '#00FF00', // 緑
                 rotations: [
-                    // 0: 横向き
+                    // 0: 出現時（上段左2つ、下段右2つ）
                     [
                         [1, 1, 0],
                         [0, 1, 1],
@@ -510,39 +530,39 @@
             J: {
                 color: '#0000FF', // 青
                 rotations: [
-                    // 0: 横向き
+                    // 0: 出現時（上に3つ、右下に1つ）
                     [
-                        [1, 0, 0],
                         [1, 1, 1],
+                        [0, 0, 1],
                         [0, 0, 0]
                     ],
                     // R: 右回転
                     [
-                        [0, 1, 1],
                         [0, 1, 0],
-                        [0, 1, 0]
+                        [0, 1, 0],
+                        [1, 1, 0]
                     ],
                     // 2: 180度回転
                     [
                         [0, 0, 0],
-                        [1, 1, 1],
-                        [0, 0, 1]
+                        [1, 0, 0],
+                        [1, 1, 1]
                     ],
                     // L: 左回転
                     [
+                        [0, 1, 1],
                         [0, 1, 0],
-                        [0, 1, 0],
-                        [1, 1, 0]
+                        [0, 1, 0]
                     ]
                 ]
             },
             L: {
                 color: '#FFA500', // オレンジ
                 rotations: [
-                    // 0: 横向き
+                    // 0: 出現時（上に3つ、左下に1つ）
                     [
-                        [0, 0, 1],
                         [1, 1, 1],
+                        [1, 0, 0],
                         [0, 0, 0]
                     ],
                     // R: 右回転
@@ -554,8 +574,8 @@
                     // 2: 180度回転
                     [
                         [0, 0, 0],
-                        [1, 1, 1],
-                        [1, 0, 0]
+                        [0, 0, 1],
+                        [1, 1, 1]
                     ],
                     // L: 左回転
                     [
@@ -679,7 +699,13 @@
             const shape = currentPiece.shape;
             const shapeWidth = shape[0].length;
             currentX = Math.floor((COLS - shapeWidth) / 2);
-            currentY = 0;
+            
+            // Y座標を調整（ミノによって異なる）
+            if (currentType === 'I' || currentType === 'T') {
+                currentY = -1; // IミノとTミノは1マス上に
+            } else {
+                currentY = 0;
+            }
 
             // 次のテトリミノをランダムに生成
             const types = Object.keys(PIECES);
