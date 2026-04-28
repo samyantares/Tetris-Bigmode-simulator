@@ -11,6 +11,7 @@
             color: #fff;
             margin: 0;
             padding: 20px;
+            overflow-x: hidden; /* 横スクロールを防ぐ */
         }
         
         h1 {
@@ -43,20 +44,21 @@
             display: flex;
             align-items: flex-start;
             gap: 20px;
-            position: relative;
+            position: relative; /* NEXTを絶対配置する親要素 */
             width: auto;
+            max-width: 100%;
         }
         
         .canvas-wrapper {
             position: relative;
-            width: auto;
+            width: 100%;
+            max-width: 400px; /* PCで大きくなりすぎないように制限 */
         }
         
         #tetrisCanvas {
-            width: 200px;
-            height: 400px;
-            max-width: 100%;
+            width: 100%; /* 画面幅に合わせて縮小 */
             height: auto;
+            max-width: 400px; /* 大きくなりすぎない制限 */
         }
         
         /* 右側情報パネル */
@@ -160,7 +162,7 @@
             transform: scale(0.98);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             body {
                 padding: 12px;
             }
@@ -173,14 +175,14 @@
 
             .canvas-area {
                 width: 100%;
-                max-width: 360px;
+                max-width: 400px;
                 position: relative;
                 justify-content: center;
             }
 
             .canvas-wrapper {
                 width: 100%;
-                max-width: 360px;
+                max-width: 400px;
             }
 
             #tetrisCanvas {
@@ -208,13 +210,13 @@
 
             .info-panel {
                 width: 100%;
-                max-width: 360px;
+                max-width: 400px;
                 min-width: auto;
             }
 
             .controls {
                 width: 100%;
-                max-width: 360px;
+                max-width: 400px;
             }
 
             .button-group {
