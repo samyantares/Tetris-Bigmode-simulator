@@ -162,6 +162,36 @@
             transform: scale(0.98);
         }
 
+        /* スマホ用モバイルコントロール */
+        .mobile-controls {
+            display: none; /* PCでは非表示 */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(22, 33, 62, 0.95);
+            border-top: 3px solid #00ff00;
+            padding: 10px;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .mobile-controls .button-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .mobile-controls button {
+            flex: 1;
+            min-height: 60px;
+            font-size: 16px;
+            padding: 12px 8px;
+            border-radius: 8px;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 12px;
@@ -199,10 +229,10 @@
 
             .next-preview {
                 position: absolute;
-                top: 8px;
-                right: 8px;
+                top: 6px;
+                right: -8px;
                 margin: 0;
-                transform: scale(0.75);
+                transform: scale(0.6);
                 transform-origin: top right;
                 background: rgba(0, 0, 0, 0.7);
                 padding: 6px;
@@ -212,29 +242,20 @@
             }
 
             #nextCanvas {
-                width: 90px;
-                height: 90px;
+                width: 70px;
+                height: 70px;
             }
 
             .info-panel {
-                width: 100%;
-                max-width: 95vw;
-                min-width: auto;
+                display: none; /* スマホでは非表示 */
             }
 
             .controls {
-                width: 100%;
-                max-width: 95vw;
-                margin-top: 8px;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 6px;
+                display: none; /* スマホではモバイルコントロールを使用 */
             }
 
-            .controls button {
-                font-size: 14px;
-                padding: 8px 10px;
+            .mobile-controls {
+                display: block; /* スマホで表示 */
             }
 
             .button-group {
@@ -288,7 +309,7 @@
         </div>
     </div>
     
-    <!-- コントロール -->
+    <!-- PC用コントロール -->
     <div class="controls">
         <h3>操作</h3>
         <div class="button-group">
@@ -302,6 +323,17 @@
         <div class="button-group" style="margin-top: 15px;">
             <button id="undoBtn">↶ 巻き戻り</button>
             <button id="newGameBtn">🔄 新しいゲーム</button>
+        </div>
+    </div>
+    
+    <!-- スマホ用モバイルコントロール -->
+    <div class="mobile-controls">
+        <div class="button-row">
+            <button id="mobileLeftBtn2">←</button>
+            <button id="mobileRightBtn2">→</button>
+            <button id="mobileRotateBtn2">⟳</button>
+            <button id="mobileSoftDropBtn2">↓</button>
+            <button id="mobileHardDropBtn2">⤓</button>
         </div>
     </div>
     
@@ -873,6 +905,43 @@
         document.getElementById('newGameBtn').addEventListener('click', () => {
             console.log('新しいゲームボタンがクリックされました');
             resetGame();
+        });
+
+        // モバイルボタンイベントリスナー
+        document.getElementById('mobileLeftBtn2').addEventListener('click', () => {
+            if (!gameOver && currentPiece) {
+                movePiece(-1, 0);
+            }
+            drawBoard();
+            drawNextPiece();
+        });
+        document.getElementById('mobileRightBtn2').addEventListener('click', () => {
+            if (!gameOver && currentPiece) {
+                movePiece(1, 0);
+            }
+            drawBoard();
+            drawNextPiece();
+        });
+        document.getElementById('mobileRotateBtn2').addEventListener('click', () => {
+            if (!gameOver && currentPiece) {
+                rotatePiece(1); // 右回転
+            }
+            drawBoard();
+            drawNextPiece();
+        });
+        document.getElementById('mobileSoftDropBtn2').addEventListener('click', () => {
+            if (!gameOver && currentPiece) {
+                softDrop();
+            }
+            drawBoard();
+            drawNextPiece();
+        });
+        document.getElementById('mobileHardDropBtn2').addEventListener('click', () => {
+            if (!gameOver && currentPiece) {
+                hardDrop();
+            }
+            drawBoard();
+            drawNextPiece();
         });
 
         // 初期化
