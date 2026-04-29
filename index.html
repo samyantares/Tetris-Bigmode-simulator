@@ -934,6 +934,7 @@
         };
 
         // 現在のテトリミノの状態
+        let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
         let currentPiece = null;
         let currentX = 0;
         let currentY = 0;
@@ -1018,6 +1019,12 @@
             }
         }
 
+        function setGameOver() {
+            gameOver = true;
+            currentPiece = null;
+            document.getElementById('gameOverMessage').style.display = 'block';
+        }
+
         // テトリミノを生成する関数
         function createPiece(type, rotationIndex = 0) {
             const pieceData = PIECES[type];
@@ -1091,8 +1098,66 @@
             return !collision(x, y, shape);
         }
 
+        function getRotationKickSequence() {
+            const baseSequence = [
+                { dx: 0, dy: 0 },
+                { dx: 1, dy: 0 },
+                { dx: -1, dy: 0 },
+                { dx: 0, dy: 1 },
+                { dx: 1, dy: 1 },
+                { dx: -1, dy: 1 }
+            ];
+
+            if (currentY < 0) {
+                return [
+                    { dx: 0, dy: -1 },
+                    { dx: 1, dy: -1 },
+                    { dx: -1, dy: -1 },
+                    ...baseSequence
+                ];
+            }
+
+            return baseSequence;
+        }
+
         // テトリミノを盤面に固定
+        function lockPiece() {
+            if (!currentPiece || gameOver) return;
+
+            let topOut = false;
+
+            for (let row = 0; row < currentPiece.shape.length; row++) {
+                for (let col = 0; col < currentPiece.shape[row].length; col++) {
+                    if (currentPiece.shape[row][col] === 0) {
+                        continue;
+                    }
+
+                    const boardX = currentX + col;
+                    const boardY = currentY + row;
+
+                    if (boardY < 0) {
+                        topOut = true;
+                        continue;
+                    }
+
+                    if (boardY >= 0 && boardY < ROWS) {
+                        board[boardY][boardX] = currentType;
+                    }
+                }
+            }
+
+            if (topOut) {
+                setGameOver();
+                return;
+            }
+
+            clearLines();
+            newPiece();
+        }
+
         function placePiece() {
+            lockPiece();
+            return;
             for (let row = 0; row < currentPiece.shape.length; row++) {
                 for (let col = 0; col < currentPiece.shape[row].length; col++) {
                     if (currentPiece.shape[row][col] !== 0) {
@@ -1146,6 +1211,30 @@
             
             const nextRotationIndex = (currentRotationIndex + direction + 4) % 4; // 次の回転状態
             const nextShape = currentPiece.rotations[nextRotationIndex];
+
+            if (currentY < 0) {
+                const ceilingKickSequence = [
+                    { dx: 0, dy: -1 },
+                    { dx: 1, dy: -1 },
+                    { dx: -1, dy: -1 },
+                    { dx: 0, dy: 0 },
+                    { dx: 1, dy: 0 },
+                    { dx: -1, dy: 0 }
+                ];
+
+                for (const kick of ceilingKickSequence) {
+                    const newX = currentX + kick.dx;
+                    const newY = currentY + kick.dy;
+                    if (isValidPosition(newX, newY, nextShape)) {
+                        currentX = newX;
+                        currentY = newY;
+                        currentPiece.shape = nextShape;
+                        currentPiece.rotationIndex = nextRotationIndex;
+                        currentRotationIndex = nextRotationIndex;
+                        return;
+                    }
+                }
+            }
             
             // wall kickシーケンス（その場回転優先、左右と下方向のみ、上方向禁止）
             const kickSequence = [
@@ -1186,7 +1275,7 @@
                 currentY = newY;
             } else if (dy > 0) {
                 // 下に移動できなかったら固定
-                placePiece();
+                lockPiece();
             }
         }
 
@@ -1203,7 +1292,7 @@
             while (isValidPosition(currentX, currentY + 1, currentPiece.shape)) {
                 currentY++;
             }
-            placePiece();
+            lockPiece();
             // placePiece内でsaveGameStateが呼ばれる
         }
 
