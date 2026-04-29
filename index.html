@@ -274,6 +274,299 @@
             text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.5);
         }
     </style>
+    <style>
+        :root {
+            --bg-top: #09101f;
+            --bg-bottom: #010307;
+            --panel-dark: rgba(7, 17, 37, 0.92);
+            --panel-mid: rgba(22, 40, 86, 0.88);
+            --line-bright: #80f7ff;
+            --line-soft: rgba(128, 247, 255, 0.32);
+            --gold: #ffd66e;
+            --text-main: #f4fbff;
+            --text-sub: #a9cbe8;
+            --danger: #ff637d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            font-family: "Trebuchet MS", "Arial Narrow", Arial, sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100dvh;
+            height: 100dvh;
+            padding: 16px 18px 18px;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at top, rgba(97, 159, 255, 0.28), transparent 34%),
+                radial-gradient(circle at 50% 18%, rgba(255, 214, 110, 0.12), transparent 18%),
+                linear-gradient(180deg, var(--bg-top) 0%, #030714 45%, var(--bg-bottom) 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(90deg, transparent 0%, rgba(160, 220, 255, 0.04) 50%, transparent 100%),
+                repeating-linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.03) 0,
+                    rgba(255, 255, 255, 0.03) 1px,
+                    transparent 1px,
+                    transparent 6px
+                );
+            mix-blend-mode: screen;
+            opacity: 0.42;
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            text-align: center;
+            font-size: clamp(28px, 5vw, 52px);
+            line-height: 0.95;
+            letter-spacing: 0.14em;
+            color: #f7fcff;
+            text-transform: uppercase;
+            text-shadow:
+                0 0 6px rgba(128, 247, 255, 0.55),
+                0 0 22px rgba(72, 115, 255, 0.6),
+                0 0 40px rgba(18, 33, 78, 0.8);
+        }
+
+        .subtitle {
+            margin: 0 0 14px;
+            text-align: center;
+            color: var(--gold);
+            font-size: 11px;
+            letter-spacing: 0.34em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 214, 110, 0.35);
+        }
+
+        .game-container {
+            flex: 1;
+            min-height: 0;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+        }
+
+        .canvas-area {
+            max-height: 100%;
+            gap: 18px;
+            padding: 18px;
+            border: 1px solid var(--line-soft);
+            background:
+                linear-gradient(180deg, rgba(17, 28, 58, 0.96), rgba(6, 11, 24, 0.96)),
+                linear-gradient(135deg, rgba(130, 204, 255, 0.14), transparent 40%);
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+                0 14px 38px rgba(0, 0, 0, 0.55),
+                0 0 24px rgba(69, 124, 255, 0.18);
+            clip-path: polygon(0 12px, 12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px));
+            overflow: hidden;
+        }
+
+        .canvas-area::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border: 1px solid rgba(128, 247, 255, 0.18);
+            pointer-events: none;
+            clip-path: inherit;
+        }
+
+        canvas {
+            background:
+                linear-gradient(180deg, rgba(1, 8, 20, 0.96), rgba(0, 0, 0, 0.96)),
+                linear-gradient(90deg, rgba(128, 247, 255, 0.06), transparent);
+            border: 2px solid #90f8ff;
+            box-shadow:
+                0 0 0 2px rgba(8, 26, 48, 0.9),
+                0 0 16px rgba(128, 247, 255, 0.22),
+                inset 0 0 24px rgba(0, 0, 0, 0.58);
+        }
+
+        .next-preview,
+        .info-panel {
+            border: 1px solid var(--line-soft);
+            background:
+                linear-gradient(180deg, rgba(17, 30, 63, 0.94), rgba(8, 14, 30, 0.96));
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 0 20px rgba(56, 118, 255, 0.18);
+        }
+
+        .next-preview {
+            min-width: 132px;
+            padding: 12px 12px 14px;
+            clip-path: polygon(0 10px, 10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+        }
+
+        .canvas-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #tetrisCanvas {
+            width: auto;
+            height: min(52vh, calc(100dvh - 230px));
+            max-width: 400px;
+            max-height: 100%;
+        }
+
+        .next-preview h3,
+        .info-panel h3,
+        .controls h3 {
+            color: var(--gold);
+            font-size: 13px;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 214, 110, 0.25);
+        }
+
+        .info-panel {
+            min-width: 220px;
+            padding: 18px;
+            clip-path: polygon(0 12px, 12px 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+        }
+
+        .stats {
+            padding: 14px 16px;
+            background: linear-gradient(180deg, rgba(16, 42, 90, 0.74), rgba(9, 22, 49, 0.82));
+            border: 1px solid rgba(144, 248, 255, 0.18);
+            box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.24);
+        }
+
+        .stat-item {
+            align-items: baseline;
+            gap: 20px;
+            font-size: 15px;
+        }
+
+        .stat-label {
+            color: var(--text-sub);
+            letter-spacing: 0.14em;
+        }
+
+        .stat-value {
+            color: #ffffff;
+            font-size: 26px;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 10px rgba(128, 247, 255, 0.28);
+        }
+
+        .controls {
+            margin-top: 12px;
+            flex-shrink: 0;
+        }
+
+        button {
+            min-width: 122px;
+            padding: 10px 16px;
+            letter-spacing: 0.08em;
+            color: #f7fbff;
+            background:
+                linear-gradient(180deg, rgba(58, 97, 180, 0.95), rgba(12, 31, 73, 0.98));
+            border: 1px solid rgba(140, 244, 255, 0.4);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                0 8px 18px rgba(0, 0, 0, 0.32);
+            clip-path: polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 214, 110, 0.75);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 10px 24px rgba(0, 0, 0, 0.42),
+                0 0 16px rgba(255, 214, 110, 0.18);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .mobile-controls {
+            padding: 12px;
+            background: linear-gradient(180deg, rgba(8, 14, 31, 0.7), rgba(5, 10, 23, 0.96));
+            border-top: 1px solid rgba(128, 247, 255, 0.24);
+            backdrop-filter: blur(12px);
+        }
+
+        .mobile-controls button {
+            min-width: 0;
+        }
+
+        .game-over {
+            color: #fff6fb;
+            font-size: 22px;
+            margin-top: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            text-shadow:
+                0 0 8px rgba(255, 99, 125, 0.7),
+                0 0 18px rgba(255, 99, 125, 0.5);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px 10px 88px;
+            }
+
+            h1 {
+                font-size: 28px;
+                margin-bottom: 4px;
+            }
+
+            .subtitle {
+                margin-bottom: 10px;
+                font-size: 9px;
+                letter-spacing: 0.22em;
+            }
+
+            .game-container {
+                justify-content: flex-start;
+                gap: 12px;
+            }
+
+            .canvas-area {
+                padding: 12px;
+            }
+
+            #tetrisCanvas {
+                width: auto;
+                height: min(58dvh, calc(100dvh - 160px));
+                max-width: 95vw;
+            }
+
+            .next-preview {
+                top: 6px;
+                right: -4px;
+                transform: scale(0.58);
+            }
+
+            .game-over {
+                font-size: 18px;
+                margin-top: 8px;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>🎮 テトリス 🎮</h1>
@@ -352,6 +645,58 @@
         const nextCanvas = document.getElementById('nextCanvas');
         const nextCtx = nextCanvas.getContext('2d');
 
+        function applyTgmThemeText() {
+            document.title = 'TGM風 BIGテトリス シミュレーター';
+
+            const title = document.querySelector('h1');
+            if (title) {
+                title.textContent = 'TETRIS THE GRAND MASTER';
+                if (!document.querySelector('.subtitle')) {
+                    const subtitle = document.createElement('p');
+                    subtitle.className = 'subtitle';
+                    subtitle.textContent = 'Big Mode Simulator';
+                    title.insertAdjacentElement('afterend', subtitle);
+                }
+            }
+
+            const labels = {
+                leftBtn: 'LEFT',
+                rightBtn: 'RIGHT',
+                rotateLeftBtn: 'ROTATE L',
+                rotateRightBtn: 'ROTATE R',
+                softDropBtn: 'SOFT DROP',
+                hardDropBtn: 'HARD DROP',
+                undoBtn: 'UNDO',
+                newGameBtn: 'NEW GAME',
+                mobileLeftBtn: 'L',
+                mobileRightBtn: 'R',
+                mobileRotateLeftBtn: '↺',
+                mobileRotateRightBtn: '↻',
+                mobileSoftDropBtn: 'D',
+                mobileHardDropBtn: 'HD',
+                mobileUndoBtn: 'U'
+            };
+
+            for (const [id, text] of Object.entries(labels)) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = text;
+                }
+            }
+
+            const controlsTitle = document.querySelector('.controls h3');
+            if (controlsTitle) {
+                controlsTitle.textContent = 'Controls';
+            }
+
+            const gameOverLabel = document.getElementById('gameOverMessage');
+            if (gameOverLabel) {
+                gameOverLabel.textContent = 'GAME OVER';
+            }
+        }
+
+        applyTgmThemeText();
+
         // 盤面の設定：5列 × 10行
         const COLS = 5;
         const ROWS = 10;
@@ -359,7 +704,8 @@
 
         // TGM風 History Randomizer
         const pieces = ['I','T','O','L','J','S','Z'];
-        let history = ['Z','S','Z','S'];
+        const INITIAL_HISTORY = ['Z','S','Z','S'];
+        let history = [...INITIAL_HISTORY];
 
         function getNextPiece() {
             let roll;
@@ -619,6 +965,7 @@
                 currentType: currentType,
                 currentRotationIndex: currentRotationIndex,
                 nextPieceType: nextPieceType,
+                history: [...history],
                 score: score,
                 linesCleared: linesCleared,
                 level: level,
@@ -646,6 +993,7 @@
             currentType = state.currentType;
             currentRotationIndex = state.currentRotationIndex || 0;
             nextPieceType = state.nextPieceType;
+            history = state.history ? [...state.history] : [...INITIAL_HISTORY];
             score = state.score;
             linesCleared = state.linesCleared;
             level = state.level;
@@ -687,8 +1035,8 @@
             console.log('新しいピースを生成します', { nextPieceType });
             // nextPieceTypeがあればそれを使う、なければランダムに生成
             if (nextPieceType === '') {
-                const types = Object.keys(PIECES);
-                nextPieceType = types[Math.floor(Math.random() * types.length)];
+                history = [...INITIAL_HISTORY];
+                nextPieceType = getNextPiece();
             }
             
             currentType = nextPieceType;
@@ -708,8 +1056,7 @@
             }
 
             // 次のテトリミノをランダムに生成
-            const types = Object.keys(PIECES);
-            nextPieceType = types[Math.floor(Math.random() * types.length)];
+            nextPieceType = getNextPiece();
 
             // ゲームオーバーチェック（盤面の上部に十分なスペースがあるか確認）
             if (collision(currentX, currentY, currentPiece.shape)) {
