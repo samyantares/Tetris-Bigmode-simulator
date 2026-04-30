@@ -495,7 +495,7 @@
 
         #tetrisCanvas {
             width: auto;
-            height: min(46vh, calc(100dvh - 300px));
+            height: var(--playfield-height, min(46vh, calc(100dvh - 300px)));
             max-width: 400px;
             max-height: 100%;
             touch-action: none;
@@ -693,7 +693,7 @@
         }
 
         body[data-edit-mode="true"] #tetrisCanvas {
-            height: min(58vh, calc(100dvh - 260px));
+            height: var(--playfield-height, min(58vh, calc(100dvh - 260px)));
         }
 
         body[data-edit-mode="true"] .controls {
@@ -838,10 +838,10 @@
 
             #tetrisCanvas {
                 width: auto;
-                height: min(
+                height: var(--playfield-height, min(
                     calc((100vw - 72px) * 2),
                     calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 132px + var(--mobile-field-extra-gap, 0px))
-                );
+                ));
                 max-width: 95vw;
             }
 
@@ -1484,6 +1484,7 @@
             }
 
             update20GActionButtons();
+            schedulePlayfieldFit();
         }
 
         // In normal mode, show D/HD. In 20G, keep START/END behavior.
@@ -1567,6 +1568,38 @@
                 nextPieceType = value === 'RANDOM' ? '' : value;
                 drawNextPiece();
             }
+        }
+
+        // Fit the playfield between the title area and the active controls.
+        function updatePlayfieldFit() {
+            const title = document.querySelector('h1');
+            const subtitle = document.querySelector('.subtitle');
+            const desktopControls = document.querySelector('.controls');
+            const mobileControls = document.querySelector('.mobile-controls');
+            const isMobile = window.matchMedia('(max-width: 600px)').matches;
+            const controls = isMobile ? mobileControls : desktopControls;
+
+            if (!title || !canvas || !controls) {
+                return;
+            }
+
+            const titleBottom = Math.max(
+                title.getBoundingClientRect().bottom,
+                subtitle ? subtitle.getBoundingClientRect().bottom : 0
+            );
+            const controlsRect = controls.getBoundingClientRect();
+            const controlsTop = isMobile ? controlsRect.top : Math.min(controlsRect.top, window.innerHeight);
+            const verticalChrome = isMobile ? 42 : 82;
+            const availableHeight = controlsTop - titleBottom - verticalChrome;
+            const maxByWidth = (Math.min(window.innerWidth * 0.95, 400) / COLS) * ROWS;
+            const minHeight = isMobile ? 210 : 260;
+            const fittedHeight = Math.max(minHeight, Math.min(maxByWidth, availableHeight));
+
+            document.documentElement.style.setProperty('--playfield-height', `${Math.floor(fittedHeight)}px`);
+        }
+
+        function schedulePlayfieldFit() {
+            requestAnimationFrame(updatePlayfieldFit);
         }
 
         // Enter or leave the normal-mode board editor.
@@ -2432,6 +2465,8 @@
             syncEditNextSelects(event.target.value);
         });
         canvas.addEventListener('pointerdown', handleEditPointerDown);
+        window.addEventListener('resize', schedulePlayfieldFit);
+        window.addEventListener('orientationchange', schedulePlayfieldFit);
 
         // Keyboard controls also support 20G pre-spawn IRS/DAS inputs
         document.addEventListener('keydown', (event) => {
@@ -2469,7 +2504,7 @@
             redrawGame();
         });
 
-        
+        schedulePlayfieldFit();
         resetGame();
     </script>
 </body>
