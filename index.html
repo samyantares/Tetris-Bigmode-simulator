@@ -497,6 +497,7 @@
             height: min(52vh, calc(100dvh - 230px));
             max-width: 400px;
             max-height: 100%;
+            touch-action: none;
         }
 
         .next-preview h3,
@@ -658,6 +659,30 @@
             height: 24px;
         }
 
+        .edit-tools {
+            margin-top: 12px;
+        }
+
+        .edit-tools select {
+            min-width: 122px;
+            padding: 10px 12px;
+            color: #f7fbff;
+            background: rgba(8, 18, 42, 0.96);
+            border: 1px solid rgba(140, 244, 255, 0.4);
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            text-align: center;
+        }
+
+        body[data-mode="20g"] .edit-tools select {
+            background: rgba(34, 6, 10, 0.96);
+            border-color: rgba(255, 122, 122, 0.42);
+        }
+
+        .mobile-edit-tools {
+            display: none;
+        }
+
         .game-over {
             color: #fff6fb;
             font-size: 22px;
@@ -722,7 +747,7 @@
 
         @media (max-width: 600px) {
             body {
-                --mobile-controls-height: 258px;
+                --mobile-controls-height: 338px;
                 height: auto;
                 min-height: 100dvh;
                 overflow-y: auto;
@@ -795,6 +820,18 @@
             .mobile-controls {
                 padding-bottom: calc(12px + env(safe-area-inset-bottom));
             }
+
+            .mobile-edit-tools {
+                display: flex;
+            }
+
+            .mobile-edit-tools select {
+                flex: 1 1 calc(50% - 8px);
+                min-height: 60px;
+                min-width: 0;
+                font-size: 15px;
+                padding: 12px 8px;
+            }
         }
     </style>
 </head>
@@ -859,6 +896,22 @@
             <button id="modeToggleBtn">20G MODE</button>
             <button id="newGameBtn">NEW GAME</button>
         </div>
+        <div class="button-group edit-tools">
+            <button id="editModeBtn">EDIT</button>
+            <button id="saveEditBtn">保存</button>
+            <button id="resetEditBtn">リセット</button>
+            <button id="startEditTestBtn">テスト開始</button>
+            <select id="editNextSelect" aria-label="Edit next piece">
+                <option value="RANDOM">RANDOM</option>
+                <option value="I">I</option>
+                <option value="O">O</option>
+                <option value="T">T</option>
+                <option value="L">L</option>
+                <option value="J">J</option>
+                <option value="S">S</option>
+                <option value="Z">Z</option>
+            </select>
+        </div>
     </div>
     
     
@@ -873,6 +926,22 @@
             <button id="mobileUndoBtn">UNDO</button>
             <button id="mobileNewGameBtn">NEW</button>
             <button id="mobileModeToggleBtn">20G</button>
+        </div>
+        <div class="button-row mobile-edit-tools">
+            <button id="mobileEditModeBtn">EDIT</button>
+            <button id="mobileSaveEditBtn">保存</button>
+            <button id="mobileResetEditBtn">リセット</button>
+            <button id="mobileStartEditTestBtn">テスト開始</button>
+            <select id="mobileEditNextSelect" aria-label="Mobile edit next piece">
+                <option value="RANDOM">RANDOM</option>
+                <option value="I">I</option>
+                <option value="O">O</option>
+                <option value="T">T</option>
+                <option value="L">L</option>
+                <option value="J">J</option>
+                <option value="S">S</option>
+                <option value="Z">Z</option>
+            </select>
         </div>
     </div>
     
@@ -908,11 +977,19 @@
                 undoBtn: 'UNDO',
                 modeToggleBtn: '20G MODE',
                 newGameBtn: 'NEW GAME',
+                editModeBtn: 'EDIT',
+                saveEditBtn: '保存',
+                resetEditBtn: 'リセット',
+                startEditTestBtn: 'テスト開始',
                 mobileStart20GBtn: 'D',
                 mobileHardDropBtn: 'HD',
                 mobileUndoBtn: 'UNDO',
                 mobileNewGameBtn: 'NEW GAME',
-                mobileModeToggleBtn: '20G'
+                mobileModeToggleBtn: '20G',
+                mobileEditModeBtn: 'EDIT',
+                mobileSaveEditBtn: '保存',
+                mobileResetEditBtn: 'リセット',
+                mobileStartEditTestBtn: 'テスト開始'
             };
 
             for (const [id, text] of Object.entries(labels)) {
@@ -1230,6 +1307,10 @@
         let pendingIRS = 0;
         let pendingDAS = 0;
         let suppress20GGravity = false;
+        let editMode = false;
+        let editTesting = false;
+        let savedEditBoard = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+        let editNextChoice = 'RANDOM';
         
         
         // Undo history
@@ -1244,7 +1325,7 @@
         }
 
         function updateModeDisplay() {
-            const modeText = gameMode === '20g' ? '20G' : 'NORMAL';
+            const modeText = editMode ? 'EDIT' : (gameMode === '20g' ? '20G' : 'NORMAL');
             const modeLabel = document.getElementById('modeValue');
             const modeBadge = document.getElementById('modeDisplay');
             const modeButton = document.getElementById('modeToggleBtn');
@@ -1253,6 +1334,22 @@
             const mobileStartButton = document.getElementById('mobileStart20GBtn');
             const lockButton = document.getElementById('hardDropBtn');
             const mobileLockButton = document.getElementById('mobileHardDropBtn');
+            const editButtons = [
+                document.getElementById('editModeBtn'),
+                document.getElementById('mobileEditModeBtn')
+            ];
+            const saveEditButtons = [
+                document.getElementById('saveEditBtn'),
+                document.getElementById('mobileSaveEditBtn')
+            ];
+            const resetEditButtons = [
+                document.getElementById('resetEditBtn'),
+                document.getElementById('mobileResetEditBtn')
+            ];
+            const startEditTestButtons = [
+                document.getElementById('startEditTestBtn'),
+                document.getElementById('mobileStartEditTestBtn')
+            ];
             const subtitle = document.querySelector('.subtitle');
             document.body.dataset.mode = gameMode;
 
@@ -1263,7 +1360,7 @@
                 modeBadge.textContent = `MODE: ${modeText}`;
             }
             if (subtitle) {
-                subtitle.textContent = gameMode === '20g' ? '20G MODE' : 'NORMAL MODE';
+                subtitle.textContent = editMode ? 'EDIT MODE' : (gameMode === '20g' ? '20G MODE' : 'NORMAL MODE');
             }
             if (modeButton) {
                 modeButton.textContent = gameMode === '20g' ? 'NORMAL MODE' : '20G MODE';
@@ -1286,6 +1383,27 @@
             if (mobileLockButton) {
                 mobileLockButton.textContent = gameMode === '20g' ? 'END' : 'HD';
                 mobileLockButton.title = gameMode === '20g' ? 'END' : 'HARD DROP';
+            }
+            for (const button of editButtons) {
+                if (button) {
+                    button.textContent = editMode ? 'PLAY' : 'EDIT';
+                    button.disabled = false;
+                }
+            }
+            for (const button of saveEditButtons) {
+                if (button) {
+                    button.disabled = !editMode;
+                }
+            }
+            for (const button of resetEditButtons) {
+                if (button) {
+                    button.disabled = !editMode && !editTesting;
+                }
+            }
+            for (const button of startEditTestButtons) {
+                if (button) {
+                    button.disabled = !editMode;
+                }
             }
 
             update20GActionButtons();
@@ -1351,6 +1469,132 @@
             pendingIRS = 0;
             pendingDAS = 0;
             updateCountdownDisplay();
+        }
+
+        function cloneBoard(sourceBoard) {
+            return sourceBoard.map(row => [...row]);
+        }
+
+        function syncEditNextSelects(value) {
+            editNextChoice = value;
+            const editSelect = document.getElementById('editNextSelect');
+            const mobileEditSelect = document.getElementById('mobileEditNextSelect');
+
+            if (editSelect) {
+                editSelect.value = value;
+            }
+            if (mobileEditSelect) {
+                mobileEditSelect.value = value;
+            }
+            if (editMode) {
+                nextPieceType = value === 'RANDOM' ? '' : value;
+                drawNextPiece();
+            }
+        }
+
+        // Enter or leave the normal-mode board editor.
+        function toggleEditMode() {
+            if (editMode) {
+                editMode = false;
+                editTesting = false;
+                updateModeDisplay();
+                redrawGame();
+                return;
+            }
+
+            gameMode = 'normal';
+            editMode = true;
+            editTesting = false;
+            clearSpawnCountdown();
+            clearPendingSpawnInputs();
+            countdownActive = false;
+            countdownValue = '';
+            waitingFor20GStart = false;
+            currentPiece = null;
+            currentType = '';
+            nextPieceType = editNextChoice === 'RANDOM' ? '' : editNextChoice;
+            gameOver = false;
+            document.getElementById('gameOverMessage').style.display = 'none';
+            updateModeDisplay();
+            updateCountdownDisplay();
+            redrawGame();
+        }
+
+        // Save the current edit board for repeatable normal-mode tests.
+        function saveEditBoard() {
+            savedEditBoard = cloneBoard(board);
+        }
+
+        // Restore the saved edit board and return to placement mode.
+        function resetEditBoard() {
+            gameMode = 'normal';
+            editMode = true;
+            editTesting = false;
+            clearSpawnCountdown();
+            clearPendingSpawnInputs();
+            board = cloneBoard(savedEditBoard);
+            currentPiece = null;
+            currentType = '';
+            currentX = 0;
+            currentY = 0;
+            nextPieceType = '';
+            gameOver = false;
+            score = 0;
+            linesCleared = 0;
+            level = 1;
+            gameHistory = [];
+            document.getElementById('scoreValue').textContent = '0';
+            document.getElementById('linesValue').textContent = '0';
+            document.getElementById('levelValue').textContent = '1';
+            document.getElementById('gameOverMessage').style.display = 'none';
+            updateModeDisplay();
+            updateCountdownDisplay();
+            redrawGame();
+        }
+
+        // Start a normal-mode test from the edited stack.
+        function startEditTest() {
+            saveEditBoard();
+            gameMode = 'normal';
+            editMode = false;
+            editTesting = true;
+            clearSpawnCountdown();
+            clearPendingSpawnInputs();
+            currentPiece = null;
+            currentType = '';
+            currentX = 0;
+            currentY = 0;
+            currentRotationIndex = 0;
+            nextPieceType = editNextChoice === 'RANDOM' ? '' : editNextChoice;
+            gameOver = false;
+            score = 0;
+            linesCleared = 0;
+            level = 1;
+            gameHistory = [];
+            document.getElementById('scoreValue').textContent = '0';
+            document.getElementById('linesValue').textContent = '0';
+            document.getElementById('levelValue').textContent = '1';
+            document.getElementById('gameOverMessage').style.display = 'none';
+            updateModeDisplay();
+            newPiece();
+            redrawGame();
+        }
+
+        // Toggle one gray edit block at the tapped board cell.
+        function handleEditPointerDown(event) {
+            if (!editMode || editTesting) return;
+            event.preventDefault();
+
+            const rect = canvas.getBoundingClientRect();
+            const col = Math.floor((event.clientX - rect.left) / (rect.width / COLS));
+            const row = Math.floor((event.clientY - rect.top) / (rect.height / ROWS));
+
+            if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
+                return;
+            }
+
+            board[row][col] = board[row][col] === 'G' ? 0 : 'G';
+            drawBoard();
         }
 
         function is20GCountdownActive() {
@@ -1843,8 +2087,7 @@
             for (let row = 0; row < ROWS; row++) {
                 for (let col = 0; col < COLS; col++) {
                     if (board[row][col] !== 0) {
-                        const pieceData = PIECES[board[row][col]];
-                        ctx.fillStyle = pieceData.color;
+                        ctx.fillStyle = board[row][col] === 'G' ? '#7b7f86' : PIECES[board[row][col]].color;
                         ctx.fillRect(col * BLOCK_SIZE, row * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                         ctx.strokeStyle = '#000';
                         ctx.strokeRect(col * BLOCK_SIZE, row * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
@@ -1900,6 +2143,8 @@
             console.log('Resetting game');
             clearSpawnCountdown();
             board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+            editMode = false;
+            editTesting = false;
             gameOver = false;
             currentPiece = null;
             currentType = '';
@@ -1994,6 +2239,8 @@
         }
 
         function toggleGameMode() {
+            editMode = false;
+            editTesting = false;
             gameMode = gameMode === '20g' ? 'normal' : '20g';
             resetGame();
         }
@@ -2038,6 +2285,21 @@
         document.getElementById('newGameBtn').addEventListener('click', () => {
             resetGame();
         });
+        document.getElementById('editModeBtn').addEventListener('click', () => {
+            toggleEditMode();
+        });
+        document.getElementById('saveEditBtn').addEventListener('click', () => {
+            saveEditBoard();
+        });
+        document.getElementById('resetEditBtn').addEventListener('click', () => {
+            resetEditBoard();
+        });
+        document.getElementById('startEditTestBtn').addEventListener('click', () => {
+            startEditTest();
+        });
+        document.getElementById('editNextSelect').addEventListener('change', (event) => {
+            syncEditNextSelects(event.target.value);
+        });
 
         document.getElementById('mobileLeftBtn').addEventListener('click', () => {
             handleMoveInput(-1);
@@ -2072,8 +2334,23 @@
         document.getElementById('mobileModeToggleBtn').addEventListener('click', () => {
             toggleGameMode();
         });
+        document.getElementById('mobileEditModeBtn').addEventListener('click', () => {
+            toggleEditMode();
+        });
+        document.getElementById('mobileSaveEditBtn').addEventListener('click', () => {
+            saveEditBoard();
+        });
+        document.getElementById('mobileResetEditBtn').addEventListener('click', () => {
+            resetEditBoard();
+        });
+        document.getElementById('mobileStartEditTestBtn').addEventListener('click', () => {
+            startEditTest();
+        });
+        document.getElementById('mobileEditNextSelect').addEventListener('change', (event) => {
+            syncEditNextSelects(event.target.value);
+        });
+        canvas.addEventListener('pointerdown', handleEditPointerDown);
 
-        
         // Keyboard controls also support 20G pre-spawn IRS/DAS inputs
         document.addEventListener('keydown', (event) => {
             const key = event.key;
