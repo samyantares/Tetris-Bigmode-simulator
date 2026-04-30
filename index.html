@@ -660,7 +660,12 @@
         }
 
         .edit-tools {
+            display: none;
             margin-top: 12px;
+        }
+
+        body[data-edit-mode="true"] .edit-tools {
+            display: flex;
         }
 
         .edit-tools select {
@@ -747,11 +752,15 @@
 
         @media (max-width: 600px) {
             body {
-                --mobile-controls-height: 338px;
+                --mobile-controls-height: 258px;
                 height: auto;
                 min-height: 100dvh;
                 overflow-y: auto;
                 padding: 10px 10px calc(var(--mobile-controls-height) + env(safe-area-inset-bottom) + 12px);
+            }
+
+            body[data-edit-mode="true"] {
+                --mobile-controls-height: 338px;
             }
 
             h1 {
@@ -821,7 +830,7 @@
                 padding-bottom: calc(12px + env(safe-area-inset-bottom));
             }
 
-            .mobile-edit-tools {
+            body[data-edit-mode="true"] .mobile-edit-tools {
                 display: flex;
             }
 
@@ -895,9 +904,9 @@
             <button id="undoBtn">UNDO</button>
             <button id="modeToggleBtn">20G MODE</button>
             <button id="newGameBtn">NEW GAME</button>
+            <button id="editModeBtn">EDIT</button>
         </div>
         <div class="button-group edit-tools">
-            <button id="editModeBtn">EDIT</button>
             <button id="saveEditBtn">保存</button>
             <button id="resetEditBtn">リセット</button>
             <button id="startEditTestBtn">テスト開始</button>
@@ -926,9 +935,9 @@
             <button id="mobileUndoBtn">UNDO</button>
             <button id="mobileNewGameBtn">NEW</button>
             <button id="mobileModeToggleBtn">20G</button>
+            <button id="mobileEditModeBtn">EDIT</button>
         </div>
         <div class="button-row mobile-edit-tools">
-            <button id="mobileEditModeBtn">EDIT</button>
             <button id="mobileSaveEditBtn">保存</button>
             <button id="mobileResetEditBtn">リセット</button>
             <button id="mobileStartEditTestBtn">テスト開始</button>
@@ -1352,6 +1361,7 @@
             ];
             const subtitle = document.querySelector('.subtitle');
             document.body.dataset.mode = gameMode;
+            document.body.dataset.editMode = editMode ? 'true' : 'false';
 
             if (modeLabel) {
                 modeLabel.textContent = modeText;
@@ -1497,8 +1507,7 @@
             if (editMode) {
                 editMode = false;
                 editTesting = false;
-                updateModeDisplay();
-                redrawGame();
+                resetGame();
                 return;
             }
 
