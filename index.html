@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TGM TETRIS SIMULATOR</title>
+    <title>TGM Big Mode Simulator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -314,6 +314,23 @@
             flex-direction: column;
         }
 
+        body[data-mode="20g"] {
+            --bg-top: #180204;
+            --bg-bottom: #040000;
+            --panel-dark: rgba(30, 5, 9, 0.94);
+            --panel-mid: rgba(78, 10, 18, 0.88);
+            --line-bright: #ff6a6a;
+            --line-soft: rgba(255, 106, 106, 0.32);
+            --gold: #ffcf5f;
+            --text-main: #fff5f5;
+            --text-sub: #f1b3b3;
+            --danger: #ff4d4d;
+            background:
+                radial-gradient(circle at top, rgba(255, 84, 84, 0.22), transparent 34%),
+                radial-gradient(circle at 50% 18%, rgba(255, 207, 95, 0.1), transparent 18%),
+                linear-gradient(180deg, var(--bg-top) 0%, #120104 45%, var(--bg-bottom) 100%);
+        }
+
         body::before {
             content: "";
             position: fixed;
@@ -332,6 +349,18 @@
             opacity: 0.42;
         }
 
+        body[data-mode="20g"]::before {
+            background:
+                linear-gradient(90deg, transparent 0%, rgba(255, 140, 140, 0.04) 50%, transparent 100%),
+                repeating-linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.03) 0,
+                    rgba(255, 255, 255, 0.03) 1px,
+                    transparent 1px,
+                    transparent 6px
+                );
+        }
+
         h1 {
             margin: 0 0 4px;
             text-align: center;
@@ -344,6 +373,13 @@
                 0 0 6px rgba(128, 247, 255, 0.55),
                 0 0 22px rgba(72, 115, 255, 0.6),
                 0 0 40px rgba(18, 33, 78, 0.8);
+        }
+
+        body[data-mode="20g"] h1 {
+            text-shadow:
+                0 0 6px rgba(255, 120, 120, 0.42),
+                0 0 22px rgba(196, 31, 31, 0.55),
+                0 0 40px rgba(66, 7, 7, 0.82);
         }
 
         .subtitle {
@@ -380,6 +416,16 @@
             overflow: hidden;
         }
 
+        body[data-mode="20g"] .canvas-area {
+            background:
+                linear-gradient(180deg, rgba(43, 8, 13, 0.96), rgba(14, 4, 7, 0.96)),
+                linear-gradient(135deg, rgba(255, 108, 108, 0.14), transparent 40%);
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+                0 14px 38px rgba(0, 0, 0, 0.55),
+                0 0 24px rgba(255, 72, 72, 0.18);
+        }
+
         .canvas-area::before {
             content: "";
             position: absolute;
@@ -387,6 +433,10 @@
             border: 1px solid rgba(128, 247, 255, 0.18);
             pointer-events: none;
             clip-path: inherit;
+        }
+
+        body[data-mode="20g"] .canvas-area::before {
+            border: 1px solid rgba(255, 106, 106, 0.18);
         }
 
         canvas {
@@ -400,6 +450,17 @@
                 inset 0 0 24px rgba(0, 0, 0, 0.58);
         }
 
+        body[data-mode="20g"] canvas {
+            background:
+                linear-gradient(180deg, rgba(18, 2, 6, 0.96), rgba(0, 0, 0, 0.96)),
+                linear-gradient(90deg, rgba(255, 106, 106, 0.06), transparent);
+            border: 2px solid #ff7d7d;
+            box-shadow:
+                0 0 0 2px rgba(48, 8, 14, 0.9),
+                0 0 16px rgba(255, 106, 106, 0.22),
+                inset 0 0 24px rgba(0, 0, 0, 0.58);
+        }
+
         .next-preview,
         .info-panel {
             border: 1px solid var(--line-soft);
@@ -408,6 +469,15 @@
             box-shadow:
                 inset 0 1px 0 rgba(255, 255, 255, 0.08),
                 0 0 20px rgba(56, 118, 255, 0.18);
+        }
+
+        body[data-mode="20g"] .next-preview,
+        body[data-mode="20g"] .info-panel {
+            background:
+                linear-gradient(180deg, rgba(42, 8, 14, 0.94), rgba(16, 4, 8, 0.96));
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 0 20px rgba(255, 74, 74, 0.18);
         }
 
         .next-preview {
@@ -452,6 +522,11 @@
             box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.24);
         }
 
+        body[data-mode="20g"] .stats {
+            background: linear-gradient(180deg, rgba(78, 10, 20, 0.76), rgba(37, 5, 10, 0.82));
+            border: 1px solid rgba(255, 125, 125, 0.18);
+        }
+
         .stat-item {
             align-items: baseline;
             gap: 20px;
@@ -468,6 +543,10 @@
             font-size: 26px;
             font-variant-numeric: tabular-nums;
             text-shadow: 0 0 10px rgba(128, 247, 255, 0.28);
+        }
+
+        body[data-mode="20g"] .stat-value {
+            text-shadow: 0 0 10px rgba(255, 106, 106, 0.28);
         }
 
         .controls {
@@ -487,6 +566,12 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.15),
                 0 8px 18px rgba(0, 0, 0, 0.32);
             clip-path: polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        body[data-mode="20g"] button {
+            background:
+                linear-gradient(180deg, rgba(180, 34, 34, 0.96), rgba(82, 9, 12, 0.98));
+            border: 1px solid rgba(255, 122, 122, 0.42);
         }
 
         button:hover {
@@ -509,8 +594,19 @@
             backdrop-filter: blur(12px);
         }
 
+        body[data-mode="20g"] .mobile-controls {
+            background: linear-gradient(180deg, rgba(33, 6, 10, 0.76), rgba(14, 2, 5, 0.96));
+            border-top: 1px solid rgba(255, 106, 106, 0.24);
+        }
+
+        .mobile-controls .button-row {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         .mobile-controls button {
             min-width: 0;
+            flex: 1 1 calc(25% - 8px);
         }
 
         .game-over {
@@ -547,9 +643,15 @@
         }
 
         .mode-badge {
-            font-size: 12px;
-            letter-spacing: 0.18em;
-            color: var(--gold);
+            display: none;
+        }
+
+        body[data-mode="20g"] .mode-badge,
+        body[data-mode="20g"] .countdown-display,
+        body[data-mode="20g"] .countdown-hint {
+            border: 1px solid rgba(255, 106, 106, 0.24);
+            background: rgba(24, 4, 8, 0.82);
+            text-shadow: 0 0 10px rgba(255, 106, 106, 0.2);
         }
 
         .countdown-display {
@@ -635,7 +737,7 @@
     </style>
 </head>
 <body>
-    <h1>式 繝・ヨ繝ｪ繧ｹ 式</h1>
+    <h1>TETRIS THE GRAND MASTER</h1>
     
     
     <div class="game-container">
@@ -701,16 +803,17 @@
         <div class="button-row">
             <button id="mobileLeftBtn">L</button>
             <button id="mobileRightBtn">R</button>
-            <button id="mobileRotateLeftBtn">↺</button>
-            <button id="mobileRotateRightBtn">↻</button>
+            <button id="mobileRotateLeftBtn">RL</button>
+            <button id="mobileRotateRightBtn">RR</button>
             <button id="mobileHardDropBtn">HD</button>
             <button id="mobileUndoBtn">U</button>
+            <button id="mobileNewGameBtn">NEW</button>
             <button id="mobileModeToggleBtn">20G</button>
         </div>
     </div>
     
     <div id="gameOverMessage" class="game-over" style="display: none;">
-        笞・・繧ｲ繝ｼ繝繧ｪ繝ｼ繝舌・・・笞・・
+        GAME OVER
     </div>
 
     <script>
@@ -722,7 +825,7 @@
         const nextCtx = nextCanvas.getContext('2d');
 
         function applyTgmThemeText() {
-            document.title = 'TGM鬚ｨ BIG繝・ヨ繝ｪ繧ｹ 繧ｷ繝溘Η繝ｬ繝ｼ繧ｿ繝ｼ';
+            document.title = 'TGM Big Mode Simulator';
 
             const title = document.querySelector('h1');
             if (title) {
@@ -730,7 +833,7 @@
                 if (!document.querySelector('.subtitle')) {
                     const subtitle = document.createElement('p');
                     subtitle.className = 'subtitle';
-                    subtitle.textContent = 'Big Mode Simulator';
+                    subtitle.textContent = 'NORMAL MODE';
                     title.insertAdjacentElement('afterend', subtitle);
                 }
             }
@@ -746,10 +849,11 @@
                 newGameBtn: 'NEW GAME',
                 mobileLeftBtn: 'L',
                 mobileRightBtn: 'R',
-                mobileRotateLeftBtn: '↺',
-                mobileRotateRightBtn: '↻',
+                mobileRotateLeftBtn: 'RL',
+                mobileRotateRightBtn: 'RR',
                 mobileHardDropBtn: 'HD',
                 mobileUndoBtn: 'U',
+                mobileNewGameBtn: 'NEW GAME',
                 mobileModeToggleBtn: '20G'
             };
 
@@ -1035,7 +1139,7 @@
         let pendingDAS = 0;
         let suppress20GGravity = false;
         const COUNTDOWN_STEPS = ['3', '2', '1', 'GO'];
-        const COUNTDOWN_STEP_MS = 250;
+        const COUNTDOWN_STEP_MS = 500;
         
         
         // Undo history
@@ -1055,12 +1159,17 @@
             const modeBadge = document.getElementById('modeDisplay');
             const modeButton = document.getElementById('modeToggleBtn');
             const mobileModeButton = document.getElementById('mobileModeToggleBtn');
+            const subtitle = document.querySelector('.subtitle');
+            document.body.dataset.mode = gameMode;
 
             if (modeLabel) {
                 modeLabel.textContent = modeText;
             }
             if (modeBadge) {
                 modeBadge.textContent = `MODE: ${modeText}`;
+            }
+            if (subtitle) {
+                subtitle.textContent = gameMode === '20g' ? '20G MODE' : 'NORMAL MODE';
             }
             if (modeButton) {
                 modeButton.textContent = gameMode === '20g' ? 'NORMAL MODE' : '20G MODE';
@@ -1383,6 +1492,20 @@
             return -1;
         }
 
+        function getLowestOccupiedRow(shape) {
+            let lowestRow = -1;
+
+            for (let row = 0; row < shape.length; row++) {
+                for (let col = 0; col < shape[row].length; col++) {
+                    if (shape[row][col] !== 0) {
+                        lowestRow = Math.max(lowestRow, row);
+                    }
+                }
+            }
+
+            return lowestRow;
+        }
+
         function getRotationKickSequence(type, currentShape, nextShape, x, y) {
             if (type === 'I') {
                 return [{ dx: 0, dy: 0 }];
@@ -1511,6 +1634,8 @@
         function rotatePiece(direction = 1) {
             if (!currentPiece || gameOver) return;
             const nextRotationIndex = (currentRotationIndex + direction + 4) % 4;
+            const nextShape = currentPiece.rotations[nextRotationIndex];
+            const baseYOffset = getLowestOccupiedRow(currentPiece.shape) - getLowestOccupiedRow(nextShape);
             
             const kickSequence = getRotationKickSequence(
                 currentType,
@@ -1522,7 +1647,7 @@
             
             for (const kick of kickSequence) {
                 const newX = currentX + kick.dx;
-                const newY = currentY + kick.dy;
+                const newY = currentY + baseYOffset + kick.dy;
                 if (isValidPosition(newX, newY, nextShape)) {
                     currentX = newX;
                     currentY = newY;
@@ -1647,7 +1772,7 @@
         
         // Reset the entire game state
         function resetGame() {
-            console.log('繧ｲ繝ｼ繝繧偵Μ繧ｻ繝・ヨ縺励∪縺・);
+            console.log('Resetting game');
             clearSpawnCountdown();
             board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
             gameOver = false;
@@ -1671,7 +1796,7 @@
             updateModeDisplay();
             updateCountdownDisplay();
             newPiece();
-            console.log('繧ｲ繝ｼ繝繝ｪ繧ｻ繝・ヨ螳御ｺ・, { currentPiece, gameOver });
+            console.log('Game reset complete', { currentPiece, gameOver });
             drawBoard();
             drawNextPiece();
             
@@ -1792,6 +1917,9 @@
         });
         document.getElementById('mobileUndoBtn').addEventListener('click', () => {
             undo();
+        });
+        document.getElementById('mobileNewGameBtn').addEventListener('click', () => {
+            resetGame();
         });
         document.getElementById('mobileModeToggleBtn').addEventListener('click', () => {
             toggleGameMode();
