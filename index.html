@@ -672,6 +672,10 @@
             gap: 10px;
         }
 
+        body[data-edit-mode="true"] .controls .button-group:not(.edit-tools) {
+            display: none;
+        }
+
         body[data-edit-mode="true"] #editModeBtn,
         body[data-edit-mode="true"] #newGameBtn,
         body[data-edit-mode="true"] #saveEditBtn {
@@ -696,7 +700,7 @@
         }
 
         body[data-edit-mode="true"] #tetrisCanvas {
-            height: min(44vh, calc(100dvh - 330px));
+            height: min(54vh, calc(100dvh - 230px));
         }
 
         body[data-edit-mode="true"] .controls {
