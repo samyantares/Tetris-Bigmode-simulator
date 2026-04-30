@@ -685,7 +685,7 @@
             border-color: rgba(255, 122, 122, 0.42);
         }
 
-        .mobile-edit-tools {
+        .mobile-controls .mobile-edit-tools {
             display: none;
         }
 
@@ -761,7 +761,7 @@
             }
 
             body[data-edit-mode="true"] {
-                --mobile-controls-height: 382px;
+                --mobile-controls-height: 332px;
             }
 
             h1 {
@@ -778,19 +778,19 @@
             .game-container {
                 justify-content: flex-start;
                 gap: 12px;
-                max-height: calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 104px);
+                max-height: calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 94px);
             }
 
             .canvas-area {
                 padding: 10px;
-                max-height: calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 112px);
+                max-height: calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 102px);
             }
 
             #tetrisCanvas {
                 width: auto;
                 height: min(
                     calc((100vw - 72px) * 2),
-                    calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 148px)
+                    calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 132px)
                 );
                 max-width: 95vw;
             }
@@ -831,16 +831,24 @@
                 padding-bottom: calc(12px + env(safe-area-inset-bottom));
             }
 
-            body[data-edit-mode="true"] .mobile-edit-tools {
+            body[data-edit-mode="true"] .mobile-controls .mobile-edit-tools {
                 display: flex;
+                gap: 6px;
+                margin-top: 8px;
+            }
+
+            .mobile-edit-tools button {
+                min-height: 46px;
+                font-size: 13px;
+                padding: 8px 6px;
             }
 
             .mobile-edit-tools select {
                 flex: 1 1 calc(50% - 8px);
-                min-height: 60px;
+                min-height: 46px;
                 min-width: 0;
-                font-size: 15px;
-                padding: 12px 8px;
+                font-size: 13px;
+                padding: 8px 6px;
             }
         }
     </style>
