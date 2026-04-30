@@ -568,6 +568,33 @@
             clip-path: polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
         }
 
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .icon-button svg {
+            width: 26px;
+            height: 26px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex: 0 0 auto;
+        }
+
+        .icon-button.mobile-only-label {
+            gap: 0;
+        }
+
+        .icon-button .icon-label {
+            font-size: 11px;
+            letter-spacing: 0.12em;
+        }
+
         body[data-mode="20g"] button {
             background:
                 linear-gradient(180deg, rgba(180, 34, 34, 0.96), rgba(82, 9, 12, 0.98));
@@ -585,6 +612,23 @@
 
         button:active {
             transform: translateY(1px);
+        }
+
+        button:disabled {
+            cursor: default;
+            opacity: 0.45;
+            transform: none;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 4px 10px rgba(0, 0, 0, 0.22);
+        }
+
+        button:disabled:hover {
+            transform: none;
+            border-color: inherit;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 4px 10px rgba(0, 0, 0, 0.22);
         }
 
         .mobile-controls {
@@ -607,6 +651,11 @@
         .mobile-controls button {
             min-width: 0;
             flex: 1 1 calc(25% - 8px);
+        }
+
+        .mobile-controls .icon-button svg {
+            width: 24px;
+            height: 24px;
         }
 
         .game-over {
@@ -789,6 +838,7 @@
             <button id="rightBtn">RIGHT</button>
             <button id="rotateLeftBtn">ROTATE L</button>
             <button id="rotateRightBtn">ROTATE R</button>
+            <button id="start20GBtn">D</button>
             <button id="hardDropBtn">HD</button>
         </div>
         <div class="button-group" style="margin-top: 15px;">
@@ -805,8 +855,9 @@
             <button id="mobileRightBtn">R</button>
             <button id="mobileRotateLeftBtn">RL</button>
             <button id="mobileRotateRightBtn">RR</button>
+            <button id="mobileStart20GBtn">D</button>
             <button id="mobileHardDropBtn">HD</button>
-            <button id="mobileUndoBtn">U</button>
+            <button id="mobileUndoBtn">UNDO</button>
             <button id="mobileNewGameBtn">NEW</button>
             <button id="mobileModeToggleBtn">20G</button>
         </div>
@@ -839,20 +890,14 @@
             }
 
             const labels = {
-                leftBtn: 'LEFT',
-                rightBtn: 'RIGHT',
-                rotateLeftBtn: 'ROTATE L',
-                rotateRightBtn: 'ROTATE R',
+                start20GBtn: 'D',
                 hardDropBtn: 'HD',
                 undoBtn: 'UNDO',
                 modeToggleBtn: '20G MODE',
                 newGameBtn: 'NEW GAME',
-                mobileLeftBtn: 'L',
-                mobileRightBtn: 'R',
-                mobileRotateLeftBtn: 'RL',
-                mobileRotateRightBtn: 'RR',
+                mobileStart20GBtn: 'D',
                 mobileHardDropBtn: 'HD',
-                mobileUndoBtn: 'U',
+                mobileUndoBtn: 'UNDO',
                 mobileNewGameBtn: 'NEW GAME',
                 mobileModeToggleBtn: '20G'
             };
@@ -861,6 +906,25 @@
                 const element = document.getElementById(id);
                 if (element) {
                     element.textContent = text;
+                }
+            }
+
+            const iconButtons = {
+                leftBtn: 'left',
+                rightBtn: 'right',
+                rotateLeftBtn: 'rotateLeft',
+                rotateRightBtn: 'rotateRight',
+                mobileLeftBtn: 'left',
+                mobileRightBtn: 'right',
+                mobileRotateLeftBtn: 'rotateLeft',
+                mobileRotateRightBtn: 'rotateRight'
+            };
+
+            for (const [id, iconName] of Object.entries(iconButtons)) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.classList.add('icon-button');
+                    element.innerHTML = getControlIconMarkup(iconName);
                 }
             }
 
@@ -873,6 +937,20 @@
             if (gameOverLabel) {
                 gameOverLabel.textContent = 'GAME OVER';
             }
+        }
+
+        function getControlIconMarkup(iconName) {
+            const icons = {
+                left: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H6"></path><path d="M11 7L6 12L11 17"></path></svg>',
+                right: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12H18"></path><path d="M13 7L18 12L13 17"></path></svg>',
+                rotateLeft: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8H4V4"></path><path d="M4 8C5.9 5.5 8.8 4 12 4C17.5 4 22 8.5 22 14"></path></svg>',
+                rotateRight: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8H20V4"></path><path d="M20 8C18.1 5.5 15.2 4 12 4C6.5 4 2 8.5 2 14"></path></svg>',
+                hardDrop: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4V15"></path><path d="M7 10L12 15L17 10"></path><path d="M5 19H19"></path></svg>',
+                lock: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"></rect><path d="M9 11V8.5A3 3 0 0 1 12 5.5A3 3 0 0 1 15 8.5V11"></path></svg>',
+                undo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 7H4V13"></path><path d="M4 13C5.8 9.2 9.4 7 13.4 7C18.1 7 22 10.9 22 15.6"></path><path d="M22 15.6C22 18.6 19.6 21 16.6 21H9"></path></svg>'
+            };
+
+            return icons[iconName] || '';
         }
 
         applyTgmThemeText();
@@ -1135,11 +1213,10 @@
         let countdownTimer = null;
         let countdownActive = false;
         let countdownValue = '';
+        let waitingFor20GStart = false;
         let pendingIRS = 0;
         let pendingDAS = 0;
         let suppress20GGravity = false;
-        const COUNTDOWN_STEPS = ['3', '2', '1', 'GO'];
-        const COUNTDOWN_STEP_MS = 500;
         
         
         // Undo history
@@ -1159,6 +1236,10 @@
             const modeBadge = document.getElementById('modeDisplay');
             const modeButton = document.getElementById('modeToggleBtn');
             const mobileModeButton = document.getElementById('mobileModeToggleBtn');
+            const startButton = document.getElementById('start20GBtn');
+            const mobileStartButton = document.getElementById('mobileStart20GBtn');
+            const lockButton = document.getElementById('hardDropBtn');
+            const mobileLockButton = document.getElementById('mobileHardDropBtn');
             const subtitle = document.querySelector('.subtitle');
             document.body.dataset.mode = gameMode;
 
@@ -1177,6 +1258,49 @@
             if (mobileModeButton) {
                 mobileModeButton.textContent = gameMode === '20g' ? 'NORMAL' : '20G';
             }
+            if (startButton) {
+                startButton.textContent = gameMode === '20g' ? 'START' : 'D';
+                startButton.title = gameMode === '20g' ? 'START' : 'SOFT DROP';
+            }
+            if (mobileStartButton) {
+                mobileStartButton.textContent = gameMode === '20g' ? 'START' : 'D';
+                mobileStartButton.title = gameMode === '20g' ? 'START' : 'SOFT DROP';
+            }
+            if (lockButton) {
+                lockButton.textContent = gameMode === '20g' ? 'END' : 'HD';
+                lockButton.title = gameMode === '20g' ? 'END' : 'HARD DROP';
+            }
+            if (mobileLockButton) {
+                mobileLockButton.textContent = gameMode === '20g' ? 'END' : 'HD';
+                mobileLockButton.title = gameMode === '20g' ? 'END' : 'HARD DROP';
+            }
+
+            update20GActionButtons();
+        }
+
+        // In normal mode, show D/HD. In 20G, keep START/END behavior.
+        function update20GActionButtons() {
+            const startButton = document.getElementById('start20GBtn');
+            const mobileStartButton = document.getElementById('mobileStart20GBtn');
+            const lockButton = document.getElementById('hardDropBtn');
+            const mobileLockButton = document.getElementById('mobileHardDropBtn');
+            const showStart = gameMode === '20g' && waitingFor20GStart && !gameOver;
+            const enableAction = !!currentPiece && !gameOver;
+
+            if (startButton) {
+                startButton.style.display = 'inline-flex';
+                startButton.disabled = gameMode === '20g' ? !showStart : !enableAction;
+            }
+            if (mobileStartButton) {
+                mobileStartButton.style.display = 'inline-flex';
+                mobileStartButton.disabled = gameMode === '20g' ? !showStart : !enableAction;
+            }
+            if (lockButton) {
+                lockButton.disabled = !enableAction;
+            }
+            if (mobileLockButton) {
+                mobileLockButton.disabled = !enableAction;
+            }
         }
 
         function updateCountdownDisplay() {
@@ -1185,21 +1309,29 @@
             const hasQueuedInput = pendingIRS !== 0 || pendingDAS !== 0;
 
             if (countdownElement) {
-                countdownElement.style.display = countdownActive ? 'block' : 'none';
-                countdownElement.textContent = countdownActive ? countdownValue : '';
+                countdownElement.style.display = (countdownActive || waitingFor20GStart) ? 'block' : 'none';
+                if (waitingFor20GStart) {
+                    countdownElement.textContent = 'READY';
+                } else {
+                    countdownElement.textContent = countdownActive ? countdownValue : '';
+                }
             }
 
             if (hintElement) {
-                if (countdownActive) {
+                if (countdownActive || waitingFor20GStart) {
                     const irsText = pendingIRS === 0 ? '-' : (pendingIRS < 0 ? 'L' : 'R');
                     const dasText = pendingDAS === 0 ? '-' : (pendingDAS < 0 ? 'L' : 'R');
                     hintElement.style.display = 'block';
-                    hintElement.textContent = `IRS: ${irsText}\nDAS: ${dasText}`;
+                    hintElement.textContent = waitingFor20GStart
+                        ? `IRS: ${irsText}\nDAS: ${dasText}\nPRESS START`
+                        : `IRS: ${irsText}\nDAS: ${dasText}`;
                 } else {
                     hintElement.style.display = hasQueuedInput ? 'block' : 'none';
                     hintElement.textContent = hasQueuedInput ? `IRS: ${pendingIRS < 0 ? 'L' : 'R'}\nDAS: ${pendingDAS < 0 ? 'L' : 'R'}` : '';
                 }
             }
+
+            update20GActionButtons();
         }
 
         function clearPendingSpawnInputs() {
@@ -1209,7 +1341,7 @@
         }
 
         function is20GCountdownActive() {
-            return gameMode === '20g' && countdownActive && !currentPiece && !gameOver;
+            return gameMode === '20g' && waitingFor20GStart && !currentPiece && !gameOver;
         }
 
         
@@ -1235,6 +1367,7 @@
                 gameMode: gameMode,
                 countdownActive: countdownActive,
                 countdownValue: countdownValue,
+                waitingFor20GStart: waitingFor20GStart,
                 pendingIRS: pendingIRS,
                 pendingDAS: pendingDAS
             };
@@ -1269,6 +1402,7 @@
             gameMode = state.gameMode || 'normal';
             countdownActive = false;
             countdownValue = '';
+            waitingFor20GStart = state.waitingFor20GStart || false;
             pendingIRS = state.pendingIRS || 0;
             pendingDAS = state.pendingDAS || 0;
             clearSpawnCountdown();
@@ -1299,6 +1433,7 @@
             clearSpawnCountdown();
             countdownActive = false;
             countdownValue = '';
+            waitingFor20GStart = false;
             gameOver = true;
             currentPiece = null;
             updateCountdownDisplay();
@@ -1345,6 +1480,26 @@
             clearPendingSpawnInputs();
         }
 
+        function begin20GReadyState() {
+            clearSpawnCountdown();
+            waitingFor20GStart = true;
+            countdownActive = false;
+            countdownValue = '';
+            currentPiece = null;
+            currentType = '';
+            updateCountdownDisplay();
+            drawBoard();
+            drawNextPiece();
+        }
+
+        function start20GTurn() {
+            if (gameMode !== '20g' || !waitingFor20GStart || gameOver) return;
+            waitingFor20GStart = false;
+            spawnPreparedPiece();
+            drawBoard();
+            drawNextPiece();
+        }
+
         
         // Spawn the prepared next piece
         function spawnPreparedPiece() {
@@ -1372,49 +1527,6 @@
         }
 
         
-        // Show a short countdown before each 20G spawn
-        function start20GSpawnCountdown() {
-            clearSpawnCountdown();
-            countdownActive = true;
-            currentPiece = null;
-            currentType = '';
-            countdownValue = COUNTDOWN_STEPS[0];
-            updateCountdownDisplay();
-            drawBoard();
-            drawNextPiece();
-
-            let stepIndex = 0;
-            const advanceCountdown = () => {
-                if (gameOver || gameMode !== '20g') {
-                    countdownActive = false;
-                    countdownValue = '';
-                    updateCountdownDisplay();
-                    return;
-                }
-
-                if (stepIndex >= COUNTDOWN_STEPS.length - 1) {
-                    countdownActive = false;
-                    countdownValue = '';
-                    updateCountdownDisplay();
-                    countdownTimer = null;
-                    spawnPreparedPiece();
-                    drawBoard();
-                    drawNextPiece();
-                    return;
-                }
-
-                stepIndex++;
-                countdownValue = COUNTDOWN_STEPS[stepIndex];
-                updateCountdownDisplay();
-                drawBoard();
-                drawNextPiece();
-                countdownTimer = setTimeout(advanceCountdown, COUNTDOWN_STEP_MS);
-            };
-
-            countdownTimer = setTimeout(advanceCountdown, COUNTDOWN_STEP_MS);
-        }
-
-        
         // Route spawning based on the active mode
         function newPiece() {
             clearSpawnCountdown();
@@ -1425,7 +1537,7 @@
             }
 
             if (gameMode === '20g') {
-                start20GSpawnCountdown();
+                begin20GReadyState();
                 return;
             }
 
@@ -1787,6 +1899,7 @@
             currentRotationIndex = 0;
             countdownActive = false;
             countdownValue = '';
+            waitingFor20GStart = false;
             clearPendingSpawnInputs();
             gameHistory = [];
             document.getElementById('gameOverMessage').style.display = 'none';
@@ -1803,7 +1916,7 @@
         }
 
         
-        // Queue IRS/DAS during the 20G countdown
+        // Queue IRS/DAS while 20G is waiting for the manual start
         function queuePreSpawnInput(kind, value) {
             if (!is20GCountdownActive()) return false;
 
@@ -1853,6 +1966,20 @@
             }
         }
 
+        function handleStartInput() {
+            if (!gameOver && gameMode === '20g') {
+                start20GTurn();
+            }
+        }
+
+        function handlePrimaryDropInput() {
+            if (gameMode === '20g') {
+                handleStartInput();
+            } else {
+                handleSoftDropInput();
+            }
+        }
+
         function toggleGameMode() {
             gameMode = gameMode === '20g' ? 'normal' : '20g';
             resetGame();
@@ -1879,6 +2006,10 @@
         });
         document.getElementById('rotateRightBtn').addEventListener('click', () => {
             handleRotateInput(1);
+            redrawGame();
+        });
+        document.getElementById('start20GBtn').addEventListener('click', () => {
+            handlePrimaryDropInput();
             redrawGame();
         });
         document.getElementById('hardDropBtn').addEventListener('click', () => {
@@ -1911,6 +2042,10 @@
             handleRotateInput(1);
             redrawGame();
         });
+        document.getElementById('mobileStart20GBtn').addEventListener('click', () => {
+            handlePrimaryDropInput();
+            redrawGame();
+        });
         document.getElementById('mobileHardDropBtn').addEventListener('click', () => {
             handleHardDropInput();
             redrawGame();
@@ -1926,10 +2061,10 @@
         });
 
         
-        // Keyboard controls also support IRS/DAS queuing
+        // Keyboard controls also support 20G pre-spawn IRS/DAS inputs
         document.addEventListener('keydown', (event) => {
             const key = event.key;
-            const handledKeys = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'z', 'Z', 'x', 'X', ' ', 'Enter', 'u', 'U'];
+            const handledKeys = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'z', 'Z', 'x', 'X', ' ', 'Enter', 'u', 'U', 's', 'S'];
 
             if (!handledKeys.includes(key)) {
                 return;
@@ -1948,7 +2083,13 @@
             } else if (key === 'z' || key === 'Z') {
                 handleRotateInput(-1);
             } else if (key === ' ' || key === 'Enter') {
-                handleHardDropInput();
+                if (gameMode === '20g' && waitingFor20GStart) {
+                    handleStartInput();
+                } else {
+                    handleHardDropInput();
+                }
+            } else if (key === 's' || key === 'S') {
+                handleStartInput();
             } else if (key === 'u' || key === 'U') {
                 undo();
             }
