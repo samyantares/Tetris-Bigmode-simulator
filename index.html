@@ -1439,10 +1439,10 @@
                 subtitle.textContent = editTesting ? 'EDIT TEST' : (editMode ? 'EDIT MODE' : (gameMode === '20g' ? '20G MODE' : 'NORMAL MODE'));
             }
             if (modeButton) {
-                modeButton.textContent = gameMode === '20g' ? 'NORMAL MODE' : '20G MODE';
+                modeButton.textContent = editUiActive ? 'NORMAL MODE' : (gameMode === '20g' ? 'NORMAL MODE' : '20G MODE');
             }
             if (mobileModeButton) {
-                mobileModeButton.textContent = gameMode === '20g' ? 'NORMAL' : '20G';
+                mobileModeButton.textContent = editUiActive ? 'NORMAL' : (gameMode === '20g' ? 'NORMAL' : '20G');
             }
             if (startButton) {
                 startButton.textContent = gameMode === '20g' ? 'START' : 'D';
@@ -2314,6 +2314,12 @@
         }
 
         function toggleGameMode() {
+            if (editMode || editTesting) {
+                gameMode = 'normal';
+                resetGame();
+                return;
+            }
+
             editMode = false;
             editTesting = false;
             gameMode = gameMode === '20g' ? 'normal' : '20g';
