@@ -1302,17 +1302,17 @@
 
             if (startButton) {
                 startButton.style.display = 'inline-flex';
-                startButton.disabled = gameMode === '20g' ? !showStart : !enableAction;
+                startButton.disabled = gameMode === '20g' ? !showStart : false;
             }
             if (mobileStartButton) {
                 mobileStartButton.style.display = 'inline-flex';
-                mobileStartButton.disabled = gameMode === '20g' ? !showStart : !enableAction;
+                mobileStartButton.disabled = gameMode === '20g' ? !showStart : false;
             }
             if (lockButton) {
-                lockButton.disabled = !enableAction;
+                lockButton.disabled = gameMode === '20g' ? !enableAction : false;
             }
             if (mobileLockButton) {
-                mobileLockButton.disabled = !enableAction;
+                mobileLockButton.disabled = gameMode === '20g' ? !enableAction : false;
             }
         }
 
