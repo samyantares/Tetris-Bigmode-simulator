@@ -666,10 +666,7 @@
         }
 
         body[data-edit-mode="true"] .edit-tools {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(122px, 170px));
-            justify-content: center;
-            gap: 8px;
+            display: contents;
         }
 
         body[data-edit-mode="true"] #editModeBtn,
@@ -708,10 +705,7 @@
         }
 
         body[data-edit-mode="true"] .controls .button-group {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(122px, 170px));
-            justify-content: center;
-            gap: 8px;
+            display: contents;
             margin-top: 8px !important;
         }
 
@@ -719,6 +713,17 @@
         body[data-edit-mode="true"] .controls select {
             min-width: 0;
             width: 100%;
+        }
+
+        body[data-edit-mode="true"] .controls {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(128px, 190px));
+            justify-content: center;
+            gap: 8px;
+        }
+
+        body[data-edit-mode="true"] .controls h3 {
+            grid-column: 1 / -1;
         }
 
         .mobile-controls .mobile-edit-tools {
