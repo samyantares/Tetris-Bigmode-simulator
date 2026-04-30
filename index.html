@@ -667,13 +667,9 @@
 
         body[data-edit-mode="true"] .edit-tools {
             display: grid;
-            grid-template-columns: repeat(2, minmax(122px, 180px));
+            grid-template-columns: repeat(2, minmax(122px, 170px));
             justify-content: center;
-            gap: 10px;
-        }
-
-        body[data-edit-mode="true"] .controls .button-group:not(.edit-tools) {
-            display: none;
+            gap: 8px;
         }
 
         body[data-edit-mode="true"] #editModeBtn,
@@ -700,7 +696,7 @@
         }
 
         body[data-edit-mode="true"] #tetrisCanvas {
-            height: min(54vh, calc(100dvh - 230px));
+            height: min(42vh, calc(100dvh - 420px));
         }
 
         body[data-edit-mode="true"] .controls {
@@ -709,6 +705,20 @@
 
         body[data-edit-mode="true"] .controls h3 {
             margin: 6px 0 8px;
+        }
+
+        body[data-edit-mode="true"] .controls .button-group {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(122px, 170px));
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px !important;
+        }
+
+        body[data-edit-mode="true"] .controls button,
+        body[data-edit-mode="true"] .controls select {
+            min-width: 0;
+            width: 100%;
         }
 
         .mobile-controls .mobile-edit-tools {
