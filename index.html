@@ -716,14 +716,22 @@
         }
 
         body[data-edit-mode="true"] .controls {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(128px, 190px));
+            display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            gap: 8px;
+            gap: 8px 10px;
+            max-width: 1040px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         body[data-edit-mode="true"] .controls h3 {
-            grid-column: 1 / -1;
+            flex: 0 0 100%;
+        }
+
+        body[data-edit-mode="true"] .controls button,
+        body[data-edit-mode="true"] .controls select {
+            flex: 0 1 150px;
         }
 
         .mobile-controls .mobile-edit-tools {
