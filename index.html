@@ -669,6 +669,12 @@
             display: flex;
         }
 
+        body[data-edit-mode="true"] #editModeBtn,
+        body[data-edit-mode="true"] #newGameBtn,
+        body[data-edit-mode="true"] #saveEditBtn {
+            display: none;
+        }
+
         .edit-tools select {
             min-width: 122px;
             padding: 10px 12px;
@@ -761,7 +767,7 @@
             }
 
             body[data-edit-mode="true"] {
-                --mobile-controls-height: 332px;
+                --mobile-controls-height: 238px;
             }
 
             h1 {
@@ -832,9 +838,16 @@
             }
 
             body[data-edit-mode="true"] .mobile-controls .mobile-edit-tools {
-                display: flex;
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 6px;
                 margin-top: 8px;
+            }
+
+            body[data-edit-mode="true"] #mobileEditModeBtn,
+            body[data-edit-mode="true"] #mobileNewGameBtn,
+            body[data-edit-mode="true"] #mobileSaveEditBtn {
+                display: none;
             }
 
             .mobile-edit-tools button {
@@ -844,9 +857,9 @@
             }
 
             .mobile-edit-tools select {
-                flex: 1 1 calc(50% - 8px);
                 min-height: 46px;
                 min-width: 0;
+                width: 100%;
                 font-size: 13px;
                 padding: 8px 6px;
             }
