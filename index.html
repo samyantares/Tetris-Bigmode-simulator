@@ -666,7 +666,10 @@
         }
 
         body[data-edit-mode="true"] .edit-tools {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(122px, 180px));
+            justify-content: center;
+            gap: 10px;
         }
 
         body[data-edit-mode="true"] #editModeBtn,
@@ -677,6 +680,7 @@
 
         .edit-tools select {
             min-width: 122px;
+            width: 100%;
             padding: 10px 12px;
             color: #f7fbff;
             background: rgba(8, 18, 42, 0.96);
@@ -689,6 +693,18 @@
         body[data-mode="20g"] .edit-tools select {
             background: rgba(34, 6, 10, 0.96);
             border-color: rgba(255, 122, 122, 0.42);
+        }
+
+        body[data-edit-mode="true"] #tetrisCanvas {
+            height: min(44vh, calc(100dvh - 330px));
+        }
+
+        body[data-edit-mode="true"] .controls {
+            margin-top: 8px;
+        }
+
+        body[data-edit-mode="true"] .controls h3 {
+            margin: 6px 0 8px;
         }
 
         .mobile-controls .mobile-edit-tools {
