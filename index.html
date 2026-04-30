@@ -810,7 +810,8 @@
             }
 
             body[data-edit-mode="true"] {
-                --mobile-controls-height: 238px;
+                --mobile-controls-height: 420px;
+                --mobile-field-extra-gap: 70px;
             }
 
             h1 {
@@ -827,19 +828,19 @@
             .game-container {
                 justify-content: flex-start;
                 gap: 12px;
-                max-height: calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 94px);
+                max-height: calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 94px + var(--mobile-field-extra-gap, 0px));
             }
 
             .canvas-area {
                 padding: 10px;
-                max-height: calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 102px);
+                max-height: calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 102px + var(--mobile-field-extra-gap, 0px));
             }
 
             #tetrisCanvas {
                 width: auto;
                 height: min(
                     calc((100vw - 72px) * 2),
-                    calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 132px)
+                    calc(100dvh - var(--mobile-controls-height) - env(safe-area-inset-bottom) - 132px + var(--mobile-field-extra-gap, 0px))
                 );
                 max-width: 95vw;
             }
